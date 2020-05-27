@@ -1,43 +1,95 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use("/styles", express.static("styles"));
 
-let campgrounds = [
-    {name: "Salmon Creek", image: "https://image.shutterstock.com/image-photo/quiet-campsite-on-bell-lake-260nw-1270124428.jpg"},
-    {name: "Granite Hill", image: "https://assets.bedful.com/images/334484fb3277ecac8cd9557dd96941de46c4e315/small.jpg"}
-];
+mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true });
+
+//Create the schema
+const campgroundsSchema = new mongoose.Schema({
+    name: String,
+    image: String,
+    description: String
+});
+
+const Campgrounds = new mongoose.model("Campgrounds", campgroundsSchema);
+
+// const startCamp = {
+//     name: "Camp 1",
+//     image: "",
+//     description: "This is the Camp 1 description"
+// }
+
+// Campgrounds.create(startCamp, (err, campground)=>{
+//     if (err){
+//         console.log(err);
+//     } else{
+//         console.log("Campground Inserted");
+//         console.log(campground);
+//     }
+// });        
 
 app.get("/", (req, res)=>{
     res.render("landing");
 })
 
-app.get("/campgrounds", (req, res)=>{    
+// INDEX - Displays all the campgrounds
+app.get("/campgrounds", (req, res)=>{
 
-    res.render("campgrounds", {campgrounds: campgrounds});
+    //Accessing database for campgrounds
+    Campgrounds.find({}, (err, allCampgrounds)=>{
+        if(err){
+            console.log(err);
+        } else {
+            res.render("index", {campgrounds: allCampgrounds});
+        }
+    });
+
 })
 
+// CREATE - Adds a campground
 app.post("/campgrounds", function(req, res){
     //get data from form and redirect to campgrounds page    
     const name = req.body.name;
     const image = req.body.image;
     const newCamp = {name: name, image: image};
     
-    campgrounds.push(newCamp);
-    
-    //redirect back to campgrounds page
-    res.redirect("/campgrounds");
+    Campgrounds.create(newCamp, (err, campground)=>{
+                if (err){
+                    console.log(err);
+                } else{
+                    console.log("Campground Inserted");
+                    console.log(campground);
+
+                    //redirect back to campgrounds page
+                    res.redirect("/campgrounds");
+                }
+            }
+    );        
 });
 
+// NEW - Displays form to add campground
 app.get("/campgrounds/new", function(req, res){
     res.render("new");
 });
 
-app.get("/test", function(req, res){
-    res.render("test");
+// SHOW - Displays info about one campground
+    // NB that this route contains the route "/campgrounds/new", therefore to be able 
+    // to access "/campgrounds/new", we need to place this after
+app.get("/campgrounds/:id", function(req, res){
+    campground_id = req.params.id;
+
+    Campgrounds.findById(campground_id, (err, campground)=>{
+        if(err){
+            console.log(err);
+        } else {
+            res.render("show", {campground: campground});
+        }
+    });
 });
 
 app.listen(3000, ()=>{
