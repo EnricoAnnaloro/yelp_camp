@@ -56,7 +56,8 @@ app.post("/campgrounds", function(req, res){
     //get data from form and redirect to campgrounds page    
     const name = req.body.name;
     const image = req.body.image;
-    const newCamp = {name: name, image: image};
+    const description = req.body.description;
+    const newCamp = {name: name, image: image, description: description};
     
     Campgrounds.create(newCamp, (err, campground)=>{
                 if (err){

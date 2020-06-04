@@ -1,3 +1,9 @@
-<h1>This is show.ejs</h1>
+<%- include("partials/header") %> 
 
-<p>You selected <%= campground.name %></p>
+<h1>You selected <%= campground.name %></h1>
+
+<img src="<%= campground.image %>">
+
+<p><%= campground.description%> </p>
+
+<%- include("partials/footer") %> 
