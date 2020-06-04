@@ -2,36 +2,20 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const methodOverride = require("method-override");
+
+const Campground = require("./models/campground");
+const Comment   = require("./models/comment");
+const seedDB = require("./seeds");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use("/styles", express.static("styles"));
+app.use(methodOverride("_method"));
 
-mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true });  
 
-//Create the schema
-const campgroundsSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-const Campgrounds = new mongoose.model("Campgrounds", campgroundsSchema);
-
-// const startCamp = {
-//     name: "Camp 1",
-//     image: "",
-//     description: "This is the Camp 1 description"
-// }
-
-// Campgrounds.create(startCamp, (err, campground)=>{
-//     if (err){
-//         console.log(err);
-//     } else{
-//         console.log("Campground Inserted");
-//         console.log(campground);
-//     }
-// });        
+seedDB();
 
 app.get("/", (req, res)=>{
     res.render("landing");
@@ -41,7 +25,7 @@ app.get("/", (req, res)=>{
 app.get("/campgrounds", (req, res)=>{
 
     //Accessing database for campgrounds
-    Campgrounds.find({}, (err, allCampgrounds)=>{
+    Campground.find({}, (err, allCampgrounds)=>{
         if(err){
             console.log(err);
         } else {
@@ -52,14 +36,14 @@ app.get("/campgrounds", (req, res)=>{
 })
 
 // CREATE - Adds a campground
-app.post("/campgrounds", function(req, res){
+app.post("/campgrounds", (req, res)=>{
     //get data from form and redirect to campgrounds page    
     const name = req.body.name;
     const image = req.body.image;
     const description = req.body.description;
     const newCamp = {name: name, image: image, description: description};
     
-    Campgrounds.create(newCamp, (err, campground)=>{
+    Campground.create(newCamp, (err, campground)=>{
                 if (err){
                     console.log(err);
                 } else{
@@ -81,16 +65,38 @@ app.get("/campgrounds/new", function(req, res){
 // SHOW - Displays info about one campground
     // NB that this route contains the route "/campgrounds/new", therefore to be able 
     // to access "/campgrounds/new", we need to place this after
-app.get("/campgrounds/:id", function(req, res){
-    campground_id = req.params.id;
+app.get("/campgrounds/:id", async (req, res) => {
+    let campground_id = req.params.id;
+    console.log(campground_id);
 
-    Campgrounds.findById(campground_id, (err, campground)=>{
-        if(err){
-            console.log(err);
-        } else {
-            res.render("show", {campground: campground});
+    let campground = await Campground.findById(campground_id).populate("comments").exec();
+    res.render("show", {campground: campground});
+});
+
+// ADDs new comment
+app.post("/campgrounds/:id", async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+
+    const new_comment = await Comment.create(
+        {
+            text: req.body.comment,
+            author: "Homer"
         }
-    });
+    );
+
+    await campground.comments.push(new_comment);
+    await campground.save();
+    console.log("Created new comment");
+
+    res.redirect("/campgrounds/" + req.params.id); 
+});
+
+//Removes Comment
+app.delete("/campgrounds/:id", async (req, res)=>{
+    const deleted_comment = await Comment.findByIdAndDelete(req.body.comment);
+    console.log("Deleting comment " + deleted_comment);
+    
+    res.redirect("/campgrounds/" + req.params.id);
 });
 
 app.listen(3000, ()=>{
