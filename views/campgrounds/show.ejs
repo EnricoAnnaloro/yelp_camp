@@ -1,21 +1,65 @@
 <%- include("../partials/header") %> 
 
-<h1>You selected <%= campground.name %></h1>
-
-<img src="<%= campground.image %>">
-
-<p><%= campground.description%> </p>
-
-<% for(const comment of campground.comments){ %>
-    <p><%= comment.author %> - <%= comment.text %></p>
-    <form action="/campgrounds/<%= campground._id %>/comments?_method=DELETE " method="POST">
-        <button name="comment" value="<%= comment._id %>">DELETE</button>        
-    </form>
-<% } %> 
-
-<form action="/campgrounds/<%= campground._id %>/comments"  method="POST">
-    <textarea name="comment" id="" cols="30" rows="10" placeholder="Comment"></textarea>
-    <input type="submit" name="" id="">
-</form>
+<div class="container w-75">
+    <div class="row">
+        <div class="col-md-3">
+            <p class="lead">YelpCamp</p>
+            <div class="list-group">
+                <li class="list-group-item active">Info 1</li>
+                <li class="list-group-item">Info 2</li>
+                <li class="list-group-item">Info 3</li>
+            </div>
+        </div> <!-- left column -->
+        <div class="col-md-9">
+            <div class="card">
+                <img class="card-img-top img-cover" src="<%= campground.image %>" alt="Card image cap">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <a href=""><h3 class="card-title"><%= campground.name %></h3></a>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-right">$9.00/night</p>
+                        </div>
+                    </div>                     
+                    <p class="text-center"><%= campground.description%> </p>
+                </div>
+                <div class="card-body">
+                    <span id="separation-line"></span>                    
+                    <% for(const comment of campground.comments){ %>
+                        <div class="row border m-1 bg-light">                            
+                            <div class="col-md-8">
+                                <h5><%= comment.author %></h5>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <p>6 days ago</p>
+                            </div>
+                            <div class="col-md-12">                                
+                                <p>
+                                    <%= comment.text %>
+                                </p>
+                                <div class="text-right">
+                                    <form action="/campgrounds/<%= campground._id %>/comments?_method=DELETE " method="POST">
+                                        <button class="btn btn-danger btn-sm mb-2 mt-2" name="comment" value="<%= comment._id %>">DELETE</button>        
+                                    </form>
+                                </div>                                                    
+                            </div>
+                        </div>
+                    <% } %> 
+                    <form class=" m-1 mt-3" action="/campgrounds/<%= campground._id %>/comments"  method="POST">
+                        <div class="form-row">
+                            <div class="col-10">
+                                <textarea class="form-control" name="comment" id="exampleFormControlTextarea1" placeholder="Comment" rows="2"></textarea>
+                            </div>
+                            <div class="col-2 text-center">
+                                <button type="submit" class="btn btn-primary mt-2">Comment</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div> <!-- Campground Card -->
+        </div> <!-- right column -->
+    </div> <!-- row -->
+</div> <!-- container -->
 
 <%- include("../partials/footer") %> 
