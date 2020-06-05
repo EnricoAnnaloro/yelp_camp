@@ -1,4 +1,4 @@
-<%- include("partials/header") %> 
+<%- include("../partials/header") %> 
 
 <h1>You selected <%= campground.name %></h1>
 
@@ -8,14 +8,14 @@
 
 <% for(const comment of campground.comments){ %>
     <p><%= comment.author %> - <%= comment.text %></p>
-    <form action="/campgrounds/<%= campground._id %>?_method=DELETE " method="POST">
-        <input type="submit" name="comment" value="<%= comment._id %>">
+    <form action="/campgrounds/<%= campground._id %>/comments?_method=DELETE " method="POST">
+        <button name="comment" value="<%= comment._id %>">DELETE</button>        
     </form>
 <% } %> 
 
-<form action="/campgrounds/<%= campground._id %>"  method="POST">
+<form action="/campgrounds/<%= campground._id %>/comments"  method="POST">
     <textarea name="comment" id="" cols="30" rows="10" placeholder="Comment"></textarea>
     <input type="submit" name="" id="">
 </form>
 
-<%- include("partials/footer") %> 
+<%- include("../partials/footer") %> 

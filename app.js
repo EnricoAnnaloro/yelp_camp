@@ -15,7 +15,7 @@ app.use(methodOverride("_method"));
 
 mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true });  
 
-seedDB();
+// seedDB();
 
 app.get("/", (req, res)=>{
     res.render("landing");
@@ -29,7 +29,7 @@ app.get("/campgrounds", (req, res)=>{
         if(err){
             console.log(err);
         } else {
-            res.render("index", {campgrounds: allCampgrounds});
+            res.render("campgrounds/index", {campgrounds: allCampgrounds});
         }
     });
 
@@ -59,7 +59,7 @@ app.post("/campgrounds", (req, res)=>{
 
 // NEW - Displays form to add campground
 app.get("/campgrounds/new", function(req, res){
-    res.render("new");
+    res.render("campgrounds/new");
 });
 
 // SHOW - Displays info about one campground
@@ -70,11 +70,11 @@ app.get("/campgrounds/:id", async (req, res) => {
     console.log(campground_id);
 
     let campground = await Campground.findById(campground_id).populate("comments").exec();
-    res.render("show", {campground: campground});
+    res.render("campgrounds/show", {campground: campground});
 });
 
 // ADDs new comment
-app.post("/campgrounds/:id", async (req, res) => {
+app.post("/campgrounds/:id/comments", async (req, res) => {
     const campground = await Campground.findById(req.params.id);
 
     const new_comment = await Comment.create(
@@ -92,7 +92,7 @@ app.post("/campgrounds/:id", async (req, res) => {
 });
 
 //Removes Comment
-app.delete("/campgrounds/:id", async (req, res)=>{
+app.delete("/campgrounds/:id/comments", async (req, res)=>{
     const deleted_comment = await Comment.findByIdAndDelete(req.body.comment);
     console.log("Deleting comment " + deleted_comment);
     
