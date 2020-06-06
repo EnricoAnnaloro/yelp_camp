@@ -1,27 +1,64 @@
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const methodOverride = require("method-override");
 
-const Campground = require("./models/campground");
-const Comment   = require("./models/comment");
-const seedDB = require("./seeds");
+//#################################################################
+// Packages requirements
+//#################################################################
+const   express = require("express"),
+        app = express(),
+        bodyParser = require("body-parser"),
+        mongoose = require("mongoose"),
+        methodOverride = require("method-override"),
+        passport = require("passport"),
+        localStrategy = require("passport-local"),
 
+        Campground = require("./models/campground"),
+        Comment   = require("./models/comment"),
+        User = require("./models/user"),
+        seedDB = require("./seeds");
+
+//#################################################################
+// App set-up
+//#################################################################
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 app.use(express.static(__dirname + "/public"));
 
-mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true });  
+//Passport configuration
+app.use(require("express-session")({
+    secret: "Yelp Camp App",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
+mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});  
+
+//#################################################################
+// Database Initialization
+//#################################################################
 // seedDB();
 
+
+
+
+
+
+
+
+//#################################################################
+// APP
+//#################################################################
 app.get("/", (req, res)=>{
     res.render("landing");
 })
 
-// INDEX - Displays all the campgrounds
+//#################################################################
+// Campgrounds Routes
+//#################################################################
 app.get("/campgrounds", (req, res)=>{
 
     //Accessing database for campgrounds
@@ -73,7 +110,9 @@ app.get("/campgrounds/:id", async (req, res) => {
     res.render("campgrounds/show", {campground: campground});
 });
 
-// ADDs new comment
+//#################################################################
+// Comments Routes
+//#################################################################
 app.post("/campgrounds/:id/comments", async (req, res) => {
     const campground = await Campground.findById(req.params.id);
 
@@ -99,6 +138,30 @@ app.delete("/campgrounds/:id/comments", async (req, res)=>{
     res.redirect("/campgrounds/" + req.params.id);
 });
 
+//#################################################################
+// AUTH ROUTES
+//#################################################################
+app.get("/register", async (req, res) => {
+    res.render("authentication/register")
+});
+
+app.post("/register", async (req, res) => {
+    const newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, (err, user) => {
+        if(err){
+            console.log(err);
+            return res.redirect("/register");
+        }
+            
+        passport.authenticate("local")(req, res, () => {
+            res.redirect("/campgrounds");
+        })
+    });
+});
+
+//#################################################################
+// APP launch
+//#################################################################
 app.listen(3000, ()=>{
     console.log("Server started...");
 })
