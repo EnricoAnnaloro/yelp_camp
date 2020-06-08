@@ -1,6 +1,6 @@
 
 //#################################################################
-// Packages requirements
+// Requirements
 //#################################################################
 const   express = require("express"),
         app = express(),
@@ -14,6 +14,10 @@ const   express = require("express"),
         Comment   = require("./models/comment"),
         User = require("./models/user"),
         seedDB = require("./seeds");
+
+const   commentsRoutes = require("./routes/comments"),
+        campgroundRoutes = require("./routes/campgrounds"),
+        indexRoutes = require("./routes/index");
 
 //#################################################################
 // App set-up
@@ -44,161 +48,19 @@ app.use((req, res, next) => {
 
     res.locals.currentUser = req.user;
     next();
-})
+});
+
+
 
 //#################################################################
 // Database Initialization
 //#################################################################
 //seedDB();
 
+app.use("/", indexRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/comments", commentsRoutes);
 
-
-
-
-
-
-
-//#################################################################
-// APP
-//#################################################################
-app.get("/", (req, res)=>{
-    res.render("landing");
-})
-
-//#################################################################
-// Campgrounds Routes
-//#################################################################
-app.get("/campgrounds", (req, res)=>{
-
-    //Accessing database for campgrounds
-    Campground.find({}, (err, allCampgrounds)=>{
-        if(err){
-            console.log(err);
-        } else {
-            res.render("campgrounds/index", {campgrounds: allCampgrounds});
-        }
-    });
-
-})
-
-// CREATE - Adds a campground
-app.post("/campgrounds", (req, res)=>{
-    //get data from form and redirect to campgrounds page    
-    const name = req.body.name;
-    const image = req.body.image;
-    const description = req.body.description;
-    const newCamp = {name: name, image: image, description: description};
-    
-    Campground.create(newCamp, (err, campground)=>{
-                if (err){
-                    console.log(err);
-                } else{
-                    //redirect back to campgrounds page
-                    res.redirect("/campgrounds");
-                }
-            }
-    );        
-});
-
-// NEW - Displays form to add campground
-app.get("/campgrounds/new", function(req, res){
-    res.render("campgrounds/new");
-});
-
-// SHOW - Displays info about one campground
-    // NB that this route contains the route "/campgrounds/new", therefore to be able 
-    // to access "/campgrounds/new", we need to place this after
-app.get("/campgrounds/:id", async (req, res) => {
-    let campground_id = req.params.id;
-    let campground = await Campground.findById(campground_id).populate("comments").exec();
-    res.render("campgrounds/show", {campground: campground});
-});
-
-//#################################################################
-// Comments Routes
-//#################################################################
-app.post("/campgrounds/:id/comments", isLoggedIn, async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    const new_comment = await Comment.create(
-        {
-            text: req.body.comment,
-            author: req.user.username
-        }
-    );
-
-    // Saving comment inside campground
-    await campground.comments.push(new_comment);
-    await campground.save();
-
-    res.redirect("/campgrounds/" + req.params.id); 
-});
-
-//Removes Comment
-app.delete("/campgrounds/:id/comments", async (req, res)=>{
-    // Checking if author wants to delete comment
-    
-    const commentToDelete = await Comment.findById(req.body.comment);
-
-    if(commentToDelete.author == req.user.username){
-        // can cancel
-        const deleted_comment = await Comment.findByIdAndDelete(req.body.comment);        
-        res.redirect("/campgrounds/" + req.params.id);
-    } else {
-        // cannot cancel
-        res.redirect("/campgrounds/" + req.params.id);
-    }
-});
-
-//#################################################################
-// AUTH ROUTES
-//#################################################################
-app.get("/register", async (req, res) => {
-    res.render("authentication/register")
-});
-
-app.post("/register", async (req, res) => {
-    const newUser = new User({username: req.body.username});
-    User.register(newUser, req.body.password, (err, user) => {
-        if(err){
-            console.log(err);
-            return res.redirect("/register");
-        }
-            
-        passport.authenticate("local")(req, res, () => {
-            res.redirect("/campgrounds");
-        })
-    });
-});
-
-app.get("/login", async (req, res) => {
-    res.render("authentication/login")
-});
-
-app.post("/login", passport.authenticate("local",
-    {
-        successRedirect: "/campgrounds",
-        failureRedirect: "/login"
-
-    }), (req, res) => {
-});
-
-app.get("/logout", (req, res) => {
-    req.logOut();
-    res.redirect("/campgrounds");
-})
-
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    } else {
-        res.redirect("/login");
-    }
-}
-
-
-//#################################################################
-// APP launch
-//#################################################################
 app.listen(3000, ()=>{
     console.log("Server started...");
 })
