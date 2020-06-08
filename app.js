@@ -37,10 +37,19 @@ passport.deserializeUser(User.deserializeUser());
 
 mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});  
 
+app.use((req, res, next) => {
+    // Middleware to pass the user info to every page, this is done to avoid passing
+    // res.render("/foo", {currentUser: req.user});
+    // every time
+
+    res.locals.currentUser = req.user;
+    next();
+})
+
 //#################################################################
 // Database Initialization
 //#################################################################
-// seedDB();
+//seedDB();
 
 
 
@@ -84,9 +93,6 @@ app.post("/campgrounds", (req, res)=>{
                 if (err){
                     console.log(err);
                 } else{
-                    console.log("Campground Inserted");
-                    console.log(campground);
-
                     //redirect back to campgrounds page
                     res.redirect("/campgrounds");
                 }
@@ -104,8 +110,6 @@ app.get("/campgrounds/new", function(req, res){
     // to access "/campgrounds/new", we need to place this after
 app.get("/campgrounds/:id", async (req, res) => {
     let campground_id = req.params.id;
-    console.log(campground_id);
-
     let campground = await Campground.findById(campground_id).populate("comments").exec();
     res.render("campgrounds/show", {campground: campground});
 });
@@ -113,29 +117,36 @@ app.get("/campgrounds/:id", async (req, res) => {
 //#################################################################
 // Comments Routes
 //#################################################################
-app.post("/campgrounds/:id/comments", async (req, res) => {
+app.post("/campgrounds/:id/comments", isLoggedIn, async (req, res) => {
     const campground = await Campground.findById(req.params.id);
-
     const new_comment = await Comment.create(
         {
             text: req.body.comment,
-            author: "Homer"
+            author: req.user.username
         }
     );
 
+    // Saving comment inside campground
     await campground.comments.push(new_comment);
     await campground.save();
-    console.log("Created new comment");
 
     res.redirect("/campgrounds/" + req.params.id); 
 });
 
 //Removes Comment
 app.delete("/campgrounds/:id/comments", async (req, res)=>{
-    const deleted_comment = await Comment.findByIdAndDelete(req.body.comment);
-    console.log("Deleting comment " + deleted_comment);
+    // Checking if author wants to delete comment
     
-    res.redirect("/campgrounds/" + req.params.id);
+    const commentToDelete = await Comment.findById(req.body.comment);
+
+    if(commentToDelete.author == req.user.username){
+        // can cancel
+        const deleted_comment = await Comment.findByIdAndDelete(req.body.comment);        
+        res.redirect("/campgrounds/" + req.params.id);
+    } else {
+        // cannot cancel
+        res.redirect("/campgrounds/" + req.params.id);
+    }
 });
 
 //#################################################################
@@ -158,6 +169,32 @@ app.post("/register", async (req, res) => {
         })
     });
 });
+
+app.get("/login", async (req, res) => {
+    res.render("authentication/login")
+});
+
+app.post("/login", passport.authenticate("local",
+    {
+        successRedirect: "/campgrounds",
+        failureRedirect: "/login"
+
+    }), (req, res) => {
+});
+
+app.get("/logout", (req, res) => {
+    req.logOut();
+    res.redirect("/campgrounds");
+})
+
+function isLoggedIn(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    } else {
+        res.redirect("/login");
+    }
+}
+
 
 //#################################################################
 // APP launch
