@@ -53,12 +53,44 @@ router.get("/:id", async (req, res) => {
     res.render("campgrounds/show", {campground: campground});
 });
 
+// EDIT
+router.get("/:id/edit", async (req, res) => {
+    let campground_id = req.params.id;
+    let campground = await Campground.findById(campground_id).populate("comments").exec();
+    res.render("campgrounds/edit", {campground: campground});
+})
+
+// UPDATE
+router.put("/:id", isAuthorized, async (req, res) => {
+    const updatedCamp = await Campground.findByIdAndUpdate(req.params.id, req.body.campground); 
+    res.redirect("/campgrounds");
+});
+
+// Campground Delete
+router.delete("/:id", isAuthorized, async (req, res)=>{
+    // Checking if author wants to delete comment
+    
+    const deleted_camp = await Campground.findByIdAndDelete(req.body.campground);        
+    res.redirect("/campgrounds");
+});
+
 // Middleware
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
         return next();
     } else {
         res.redirect("/login");
+    }
+}
+
+async function isAuthorized(req, res, next){
+    const toDelete = await Campground.findById(req.params.id);
+    console.log(toDelete);
+
+    if(req.user && toDelete.author.id.equals(req.user._id)){
+        return next();
+    } else {
+        res.redirect("/");
     }
 }
 

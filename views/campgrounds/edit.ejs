@@ -1,18 +1,18 @@
 <%- include("../partials/header") %> 
 
 <div class="container text-center">
-    <h2>Create a new campground</h2>
+    <h2>Edit  <%= campground.name %> campground</h2>    
     
     <div class="container h-100">
         <div class="row h-100 justify-content-center align-items-center">
-            <form action="/campgrounds" method="POST" class="col-lg-6">
+            <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" class="col-lg-6">  
                 <div class="form-group">
-                    <input class="form-control mb-2" type="text" name="name" placeholder="name">
-                    <input class="form-control mb-2" type="text" name="image" placeholder="image url">
-                    <input class="form-control mb-2" type="text" name="description" placeholder="description">
+                    <input class="form-control mb-2" type="text" name="campground[name]" value="<%= campground.name %>">
+                    <input class="form-control mb-2" type="text" name="campground[image]" value="<%= campground.image %>">
+                    <input class="form-control mb-2" type="text" name="campground[description]" value="<%= campground.description %>">
                     <button class="btn btn-success btn-lg  btn-block">SUBMIT</button>
                 </div>            
-            </form>   
+          </form>   
         </div>
         <div class="row h-100 justify-content-center align-items-center">
             <div class="col-lg-6">

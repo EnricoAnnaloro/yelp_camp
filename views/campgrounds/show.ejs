@@ -13,7 +13,7 @@
         <div class="col-md-9">
             <div class="card">
                 <img class="card-img-top img-cover" src="<%= campground.image %>" alt="Card image cap">
-                <div class="card-body">
+                <div class="card-body pb-0">
                     <div class="row">
                         <div class="col-md-9">
                             <a href=""><h3 class="card-title"><%= campground.name %></h3></a>
@@ -23,13 +23,28 @@
                         </div>
                     </div>                     
                     <p class="text-center"><%= campground.description%> </p>
+                    <p class="text-right font-italic">Created By <%= campground.author.username %></p>
+                    <% if (currentUser && currentUser._id.equals(campground.author.id)){ %>
+                        <div class="row justify-content-end">
+                            <div class="col-md-3">
+                                <a href="/campgrounds/<%= campground._id %>/edit"><button class="btn btn-warning btn-sm btn-block">Edit</button></a>
+                            </div>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-md-3">
+                                <form action="/campgrounds/<%= campground._id %>?_method=DELETE " method="POST">
+                                    <button class="btn btn-danger btn-sm mb-2 mt-2 btn-block" name="campground" value="<%= campground._id %>">Delete Campground</button>        
+                                </form>
+                            </div>
+                        </div>
+                    <% } %>
                 </div>
-                <div class="card-body">
+                <div class="card-body pt-1">
                     <span id="separation-line"></span>                    
                     <% for(const comment of campground.comments){ %>
-                        <div class="row border m-1 bg-light">                            
+                        <div class="row border mt-4 m-2 bg-light">                            
                             <div class="col-md-8">
-                                <h5><%= comment.author %></h5>
+                                <h5><%= comment.author.username %></h5>
                             </div>
                             <div class="col-md-4 text-right">
                                 <p>6 days ago</p>
@@ -38,8 +53,8 @@
                                 <p>
                                     <%= comment.text %>
                                 </p>
-
-                                <% if (currentUser && currentUser.username == comment.author){ %> 
+                                
+                                <% if (currentUser && currentUser._id.equals(comment.author.id)){ %>                                    
                                     <div class="text-right">
                                         <form action="/campgrounds/<%= campground._id %>/comments?_method=DELETE " method="POST">
                                             <button class="btn btn-danger btn-sm mb-2 mt-2" name="comment" value="<%= comment._id %>"><i class="fas fa-trash-alt"></i></button>        
