@@ -30,11 +30,29 @@ router.post("/", isLoggedIn, async (req, res) => {
     res.redirect("/campgrounds/" + req.params.id); 
 });
 
+// UPDATE
+router.put("/", isAuthorized, async (req, res) => {
+
+    const newComm = {
+        text: req.body.comment
+    }
+    console.log(newComm);
+
+    console.log(req.body.comment_id);
+
+    const toBe = await Comment.findById(req.body.comment_id);
+    console.log(toBe);
+
+    const updatedComment = await Comment.findByIdAndUpdate(req.body.comment_id, newComm); 
+    console.log(updatedComment);
+    res.redirect("/campgrounds/" + req.params.id);
+});
+
 // Comment Delete
 router.delete("/", isAuthorized, async (req, res)=>{
     // Checking if author wants to delete comment
     
-    const deleted_comment = await Comment.findByIdAndDelete(req.body.comment);        
+    const deleted_comment = await Comment.findByIdAndDelete(req.body.comment_id);        
     res.redirect("/campgrounds/" + req.params.id);
 });
 
@@ -48,7 +66,7 @@ function isLoggedIn(req, res, next){
 }
 
 async function isAuthorized(req, res, next){
-    const commentToDelete = await Comment.findById(req.body.comment);
+    const commentToDelete = await Comment.findById(req.body.comment_id);
     if(req.user && commentToDelete.author.id.equals(req.user._id)){
         return next();
     } else {
