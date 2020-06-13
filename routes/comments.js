@@ -4,11 +4,12 @@
 const   express = require("express"),
         router = express.Router({mergeParams:true}),
         Campground = require("../models/campground"),
-        Comment   = require("../models/comment");
+        Comment   = require("../models/comment"),
+        middleware = require("../middleware/myMiddleware");
 
         
 // Comment New
-router.post("/", isLoggedIn, async (req, res) => {
+router.post("/", middleware.isLoggedIn, async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     const author = {
         id: req.user._id,
@@ -31,7 +32,7 @@ router.post("/", isLoggedIn, async (req, res) => {
 });
 
 // UPDATE
-router.put("/", isAuthorized, async (req, res) => {
+router.put("/", middleware.isAuthorizedComment, async (req, res) => {
 
     const newComm = {
         text: req.body.comment
@@ -49,29 +50,13 @@ router.put("/", isAuthorized, async (req, res) => {
 });
 
 // Comment Delete
-router.delete("/", isAuthorized, async (req, res)=>{
+router.delete("/", middleware.isAuthorizedComment, async (req, res)=>{
     // Checking if author wants to delete comment
     
     const deleted_comment = await Comment.findByIdAndDelete(req.body.comment_id);        
     res.redirect("/campgrounds/" + req.params.id);
 });
 
-// Middleware
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    } else {
-        res.redirect("/login");
-    }
-}
 
-async function isAuthorized(req, res, next){
-    const commentToDelete = await Comment.findById(req.body.comment_id);
-    if(req.user && commentToDelete.author.id.equals(req.user._id)){
-        return next();
-    } else {
-        res.redirect("/");
-    }
-}
 
 module.exports = router;

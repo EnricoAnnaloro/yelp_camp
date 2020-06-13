@@ -9,6 +9,7 @@ const   express = require("express"),
         methodOverride = require("method-override"),
         passport = require("passport"),
         localStrategy = require("passport-local"),
+        flash = require("connect-flash"),
 
         Campground = require("./models/campground"),
         Comment   = require("./models/comment"),
@@ -50,12 +51,14 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(flash());
+
 
 
 //#################################################################
 // Database Initialization
 //#################################################################
-seedDB();
+// seedDB();
 
 app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
