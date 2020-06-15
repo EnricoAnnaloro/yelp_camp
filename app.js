@@ -14,7 +14,7 @@ const   express = require("express"),
         Campground = require("./models/campground"),
         Comment   = require("./models/comment"),
         User = require("./models/user"),
-        seedDB = require("./seeds");
+        seedDB = require("./public/js/seeds");
 
 const   commentsRoutes = require("./routes/comments"),
         campgroundRoutes = require("./routes/campgrounds"),

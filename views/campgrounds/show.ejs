@@ -40,11 +40,13 @@
                     <% } %>
                 </div>
                 <div class="card-body pt-1">
-                    <span id="separation-line"></span>                    
+                    <span id="separation-line"></span>              
+                    
+                    <!-- Loop over all comments -->
                     <% for(const comment of campground.comments){ %>
                         <div class="row border mt-4 m-2 bg-light">                            
                             <div class="col-md-8">
-                                <h5><%= comment.author.username %></h5>
+                                <h5><%= comment.author.username%></h5>
                             </div>
                             <div class="col-md-4 text-right">
                                 <p>6 days ago</p>
@@ -54,42 +56,16 @@
                                     <%= comment.text %>
                                 </p>
                                 
+                                <!-- Check if author is logged in for displaying of buttons -->
                                 <% if (currentUser && currentUser._id.equals(comment.author.id)){ %> 
                                     <div class="row justify-content-end mb-2">
                                         <div class="col-md-1 p-0 m-0">
-                                            <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#exampleModalCenter" data-whatever="@fat" > 
-                                                <!-- <i class="far fa-edit"></i> -->
-                                                <%= comment._id %>
-                                            </button>
+
                                             
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLongTitle"></h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <form class=" m-1 mt-3" action="/campgrounds/<%= campground._id %>/comments?_method=PUT"  method="POST">
-                                                            <div class="form-row">
-                                                                <div class="col-12">
-                                                                    <textarea class="form-control" name="comment" id="exampleFormControlTextarea1" rows="2"><%= comment.text %></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer justify-content-around">
-                                                                    <div class="col-2 text-center">
-                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                    </div>
-                                                                    <div class="col-2 text-center">
-                                                                        <button type="submit" class="btn btn-primary" name="comment_id" value="<%= comment._id %>">Comment</button>
-                                                                    </div>
-                                                            </div>
-                                                        </form>                                                         
-                                                    </div>
-                                                </div>
-                                            </div>                    
+                                            <!-- Modal Button -->
+                                            <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#exampleModalCenter" data-comment="<%= JSON.stringify(comment) %>" data-campground="<%= JSON.stringify(campground) %>">                                                 <i class="far fa-edit"></i>
+                                            </button>                                              
+
                                         </div>
                                         <div class="col-md-1 m-0 p-0">
                                             <form action="/campgrounds/<%= campground._id %>/comments?_method=DELETE " method="POST">
@@ -98,7 +74,6 @@
                                         </div>                                                      
                                     </div>
                                 <% } %> 
-
                             </div>
                         </div>
                     <% } %> 
@@ -118,16 +93,60 @@
     </div> <!-- row -->
 </div> <!-- container -->
 
+<!-- Modal Template -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editForm" class="m-1 mt-3" action=""  method="POST">
+                <div class="form-row">
+                    <h1 id="testTitle"></h1>
+                    <div class="col-12">
+                        <textarea class="form-control" name="comment" id="commentText" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-around">
+                        <div class="col-2 text-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                        <div class="col-2 text-center">
+                            <button id="submitButton" type="submit" class="btn btn-primary" name="comment_id" value="">Comment</button>
+                        </div>
+                </div>
+            </form>                                                    
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>            
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
 <script>
-    $('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-})
+    $('#exampleModalCenter').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget) // Button that triggered the modal
+        const comment = button.data('comment') // Extract info from data-* attributes
+        const campground = button.data('campground')
+        
+        console.log(comment)
+        console.log(comment.text)
+        console.log(campground)
+        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+
+        var modal = $(this)
+        modal.find('.modal-title').text('New message to ' + comment.author.username)
+        modal.find('#commentText').val(comment.text)
+        modal.find('#editForm').attr('action', '/campgrounds/' + campground._id + '/comments?_method=PUT')
+        modal.find('#submitButton').val(comment._id)
+    })
 </script>
 
+ </body>
+</html>
 
-<%- include("../partials/footer") %> 

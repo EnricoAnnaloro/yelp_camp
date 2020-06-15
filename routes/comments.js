@@ -34,6 +34,8 @@ router.post("/", middleware.isLoggedIn, async (req, res) => {
 // UPDATE
 router.put("/", middleware.isAuthorizedComment, async (req, res) => {
 
+    console.log("REQ --- " + req);
+
     const newComm = {
         text: req.body.comment
     }
