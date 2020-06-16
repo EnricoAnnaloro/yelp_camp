@@ -40,6 +40,7 @@ router.post("/", middleware.isLoggedIn, (req, res)=>{
                     console.log(err);
                 } else{
                     //redirect back to campgrounds page
+                    req.flash("success", "Campground Succesfully Created!");     
                     res.redirect("/campgrounds");
                 }
             }
@@ -56,31 +57,30 @@ router.get("/new", middleware.isLoggedIn, function(req, res){
     // to access "/campgrounds/new", we need to place this after
 router.get("/:id", async (req, res) => {
     let campground_id = req.params.id;
-    let campground = await Campground.findById(campground_id).populate("comments").exec();
-
-    console.log(campground);
-    
+    let campground = await Campground.findById(campground_id).populate("comments").exec();    
     res.render("campgrounds/show", {campground: campground});
 });
 
 // EDIT
-router.get("/:id/edit", async (req, res) => {
+router.get("/:id/edit", middleware.isLoggedIn, middleware.isAuthorizedCamp, async (req, res) => {
     let campground_id = req.params.id;
     let campground = await Campground.findById(campground_id).populate("comments").exec();
     res.render("campgrounds/edit", {campground: campground});
 })
 
 // UPDATE
-router.put("/:id", middleware.isAuthorizedCamp, async (req, res) => {
+router.put("/:id", middleware.isLoggedIn, middleware.isAuthorizedCamp, async (req, res) => {
     const updatedCamp = await Campground.findByIdAndUpdate(req.params.id, req.body.campground); 
+    req.flash("success", "Campground Succesfully Updated!");     
     res.redirect("/campgrounds");
 });
 
 // Campground Delete
-router.delete("/:id", middleware.isAuthorizedCamp, async (req, res)=>{
+router.delete("/:id",  middleware.isLoggedIn, middleware.isAuthorizedCamp, async (req, res)=>{
     // Checking if author wants to delete comment
     
-    const deleted_camp = await Campground.findByIdAndDelete(req.body.campground);        
+    const deleted_camp = await Campground.findByIdAndDelete(req.body.campground);   
+    req.flash("success", "Campground Succesfully Deleted!");     
     res.redirect("/campgrounds");
 });
 

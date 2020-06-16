@@ -28,26 +28,19 @@ router.post("/", middleware.isLoggedIn, async (req, res) => {
     await campground.comments.push(new_comment);
     await campground.save();
 
+    req.flash("success", "Comment Succesfully Added!");     
     res.redirect("/campgrounds/" + req.params.id); 
 });
 
 // UPDATE
 router.put("/", middleware.isAuthorizedComment, async (req, res) => {
-
-    console.log("REQ --- " + req);
-
     const newComm = {
         text: req.body.comment
     }
-    console.log(newComm);
-
-    console.log(req.body.comment_id);
-
     const toBe = await Comment.findById(req.body.comment_id);
-    console.log(toBe);
-
     const updatedComment = await Comment.findByIdAndUpdate(req.body.comment_id, newComm); 
-    console.log(updatedComment);
+
+    req.flash("success", "Comment Succesfully Modified!");     
     res.redirect("/campgrounds/" + req.params.id);
 });
 
@@ -55,7 +48,8 @@ router.put("/", middleware.isAuthorizedComment, async (req, res) => {
 router.delete("/", middleware.isAuthorizedComment, async (req, res)=>{
     // Checking if author wants to delete comment
     
-    const deleted_comment = await Comment.findByIdAndDelete(req.body.comment_id);        
+    const deleted_comment = await Comment.findByIdAndDelete(req.body.comment_id);
+    req.flash("success", "Comment Succesfully Deleted!");             
     res.redirect("/campgrounds/" + req.params.id);
 });
 
