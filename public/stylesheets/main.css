@@ -1,6 +1,13 @@
-body{
+/* body{
     font-family: 'Lato', sans-serif;
     background-color: rgba(168, 167, 167, 0.103);
+} */
+
+body, html{
+    margin: 0;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+    height: 100%;
 }
 
 .navbar{
@@ -30,3 +37,76 @@ body{
 .card-img-top{
     height: 70%;
 }
+
+#login-content{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;        
+    background-image: url(https://images.pexels.com/photos/3232542/pexels-photo-3232542.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 55%;
+}
+
+#login-content .container{
+    z-index: 2;
+    margin-top: 13%;
+}
+
+#login-content #login-slogan h1{
+    font-size: 90px;
+    color: white;
+    z-index: 2;
+    text-transform: uppercase;    
+}
+
+#login-content #login-slogan h1:after{
+    content: 'Discover';
+    animation: slogan-slide 8s linear infinite;
+}
+
+#login-content .container #login-form{
+    padding: 30px;
+    background-color:white;
+}
+
+#login-content .bgOverlay{
+    margin: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes slogan-slide{
+    0%{content: "Discover";}
+    25%{content: "Live";}
+    50%{content: "Relax";}
+    75%{content: "Enjoy";}
+}
+
+.register-content{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;        
+    background-image: url(https://images.pexels.com/photos/3232542/pexels-photo-3232542.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 55%;
+}
+
+.register-content #register-form{
+    margin-top: 10%;
+    padding-left: 5%;
+    padding-bottom: 5%;
+    background-color: rgba(255, 255, 255, 0.45);    
+}
+
