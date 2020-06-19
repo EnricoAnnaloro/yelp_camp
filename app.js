@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 //#################################################################
 // Database Initialization
 //#################################################################
-// seedDB();
+seedDB();
 
 app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);

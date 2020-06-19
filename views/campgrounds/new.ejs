@@ -1,25 +1,65 @@
 <%- include("../partials/header") %> 
 
-<div class="container text-center">
-    <h2>Create a new campground</h2>
+<div id="newCampBg">
+    <div class="container text-center">
+        <div id="newCampForm">
+
+            <h1>Create a new campground</h1>
+            
+                <form action="/campgrounds" method="POST">
+                    <div class="form-group">
+                        <input class="form-control mb-2" type="text" name="name" placeholder="name" required>
+                        <input class="form-control mb-2" type="text" name="image" placeholder="image url" required>
+                        <input class="form-control mb-2" type="text" name="description" placeholder="description" required>
+                    </div>
     
-    <div class="container h-100">
-        <div class="row h-100 justify-content-center align-items-center">
-            <form action="/campgrounds" method="POST" class="col-lg-6">
-                <div class="form-group">
-                    <input class="form-control mb-2" type="text" name="name" placeholder="name" required>
-                    <input class="form-control mb-2" type="text" name="image" placeholder="image url" required>
-                    <input class="form-control mb-2" type="text" name="description" placeholder="description" required>
-                    <button class="btn btn-success btn-lg  btn-block">SUBMIT</button>
-                </div>            
-            </form>   
-        </div>
-        <div class="row h-100 justify-content-center align-items-center">
-            <div class="col-lg-6">
-                <a href="/campgrounds"> <button class="btn btn-secondary btn-lg btn-block">SHOW CAMPS</button></a>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-4 align-self-top text-right">
+                                <label for="exampleFormControlSelect1" id="newCampPrice">Price</label>
+                            </div>
+                            <div class="col-md-3 align-item-center">
+                                <div class="form-group text-center">
+                                    <select class="form-control" id="exampleFormControlSelect1" name="price">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>6</option>
+                                        <option>7</option>
+                                        <option>8</option>
+                                        <option>9</option>
+                                        <option>10</option>
+                                        <option>11</option>
+                                        <option>12</option>
+                                        <option>13</option>
+                                        <option>14</option>
+                                        <option>15</option>
+                                        <option>16</option>
+                                        <option>17</option>
+                                        <option>18</option>
+                                        <option>19</option>
+                                        <option>20+</option>
+                                    </select>
+                                    </div>
+                            </div>
+                            <div class="col-md-2 align-self-top text-left">
+                                <label for="exampleFormControlSelect1" id="newCampPrice">$/night</label>
+                            </div>                                    
+                        </div>
+                        <button class="btn btn-success btn-lg  btn-block">SUBMIT</button>
+                    </div>            
+                </form>   
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-lg-6">
+                        <a href="/campgrounds"> <button class="btn btn-secondary btn-lg btn-block">SHOW CAMPS</button></a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <div class="bgOverlay"></div>
 </div>
 
 

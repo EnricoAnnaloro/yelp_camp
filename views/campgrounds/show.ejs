@@ -19,7 +19,9 @@
                             <a href=""><h3 class="card-title"><%= campground.name %></h3></a>
                         </div>
                         <div class="col-md-3">
-                            <p class="text-right">$9.00/night</p>
+                            <% if(campground.price) {%> 
+                                <p class="text-right">$<%= campground.price %>/night</p>
+                            <% } %> 
                         </div>
                     </div>                     
                     <p><%= campground.description%> </p>

@@ -12,7 +12,7 @@ body, html{
     height: 100%;
     overflow: hidden;
     position: relative;        
-    background-image: url(https://images.pexels.com/photos/3232542/pexels-photo-3232542.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260);
+    background-image: url("bgs/bg_01.jpeg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 55%;
@@ -66,12 +66,12 @@ body, html{
 
 @keyframes slide{
     0%{
-        background-image: url(https://images.pexels.com/photos/3232542/pexels-photo-3232542.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260);
+        background-image: url("bgs/bg_01.jpeg");
     }
     33%{
-        background-image: url(https://images.pexels.com/photos/2255518/pexels-photo-2255518.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260);
+        background-image: url("bgs/bg_02.jpeg");
     }
     66%{
-        background-image: url(https://images.pexels.com/photos/939723/pexels-photo-939723.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260);
+        background-image: url("bgs/bg_03.jpeg");
     }
 }
