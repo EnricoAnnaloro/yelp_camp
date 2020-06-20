@@ -41,7 +41,13 @@ passport.use(new localStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});  
+mongoose.connect("mongodb+srv://yelp-camp:Maurizio1@yelp-camp-kuuwp.mongodb.net/Yelp-Camp?retryWrites=true&w=majority", { 
+    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
+}).then(() => {
+    console.log('Connected to DB!');
+}).catch(err => {
+    console.log("ERROR: ", err.message);
+});
 
 app.use((req, res, next) => {
     // Middleware to pass the user info to every page, this is done to avoid passing
@@ -58,12 +64,12 @@ app.use((req, res, next) => {
 //#################################################################
 // Database Initialization
 //#################################################################
-seedDB();
+// seedDB();
 
 app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentsRoutes);
 
 app.listen(process.env.PORT, ()=>{
-    console.log("Server started...");
+    console.log("Server startedvon port " + process.env.PORT + " ...");
 })
