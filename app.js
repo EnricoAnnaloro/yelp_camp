@@ -71,5 +71,5 @@ app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentsRoutes);
 
 app.listen(process.env.PORT, ()=>{
-    console.log("Server startedvon port " + process.env.PORT + " ...");
+    console.log("Server started on port " + process.env.PORT + " ...");
 })
